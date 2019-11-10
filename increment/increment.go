@@ -6,20 +6,24 @@ import (
 	"strconv"
 )
 
-//const regExpPattern = `([0-9]+).([0-9]+).([0-9]+)(.[0-9]+)?`
-const regExpPattern = `([0-9]+).([0-9]+).([0-9]+)`
+const regExpPattern = `([0-9]+)\.([0-9]+)\.([0-9]+)(\.[0-9]+)?(\-[a-zA-Z0-9]+)?(.*)`
 
-func Increment(version string) string {
+func Increment(version string) (string, error) {
 	rep := regexp.MustCompile(regExpPattern)
 	result := rep.FindAllStringSubmatch(version, -1)
 	if len(result) != 1 {
-		return ""
+		return "", fmt.Errorf("not a valid semantic version='%s'", version)
 	}
-	versions := result[0][1:]
-	if len(versions) < 3 {
-		return ""
+	numbers := result[0][1:]
+	if numbers[5] != "" {
+		return "", fmt.Errorf("not a valid semantic version='%s'", version)
 	}
-	minor, _ := strconv.Atoi(versions[2])
-	return fmt.Sprintf("%s.%s.%d", versions[0], versions[1], minor+1)
-	return ""
+	if numbers[3] == "" {
+		patch, _ := strconv.Atoi(numbers[2])
+		return fmt.Sprintf("%s.%s.%d", numbers[0], numbers[1], patch+1), nil
+	} else {
+		build, _ := strconv.Atoi(numbers[3])
+		return fmt.Sprintf("%s.%s.%s.%d", numbers[0], numbers[1], numbers[2], build+1), nil
+	}
+
 }

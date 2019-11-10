@@ -30,7 +30,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	incremented := increment.Increment(version)
+	incremented, err := increment.Increment(version)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if err := ioutil.WriteFile(filePath, []byte(incremented), fi.Mode()); err != nil {
 		log.Fatal(err)
 	}
