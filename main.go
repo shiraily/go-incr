@@ -11,13 +11,29 @@ import (
 )
 
 func main() {
+	argVersions := []struct {
+		name  string
+		value bool
+	}{
+		{name: "major"},
+		{name: "minor"},
+		{name: "patch"},
+		{name: "build"},
+	}
+	for i, argVersion := range argVersions {
+		flag.BoolVar(
+			&argVersions[i].value,
+			argVersion.name,
+			false,
+			fmt.Sprintf("increment %s version", argVersion.name),
+		)
+	}
 	flag.Parse()
+
 	args := flag.Args()
 	if len(args) == 0 {
 		return
 	}
-	fmt.Println(args[0])
-
 	filePath := args[0]
 	buf, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -30,7 +46,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	incremented, err := increment.Increment(version, increment.Patch)
+
+	var target increment.VersionNumber
+	for i, argVersion := range argVersions {
+		if argVersion.value {
+			target = increment.VersionNumber(i)
+			break
+		}
+	}
+	incremented, err := increment.Increment(version, target)
 	if err != nil {
 		log.Fatal(err)
 	}

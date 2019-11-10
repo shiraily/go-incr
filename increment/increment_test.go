@@ -6,9 +6,9 @@ import (
 )
 
 type version struct {
-	version string
-	target  versionNumber
-	err     error
+	expected string
+	target   VersionNumber
+	err      error
 }
 
 func TestIncrement(t *testing.T) {
@@ -28,18 +28,18 @@ func TestIncrement(t *testing.T) {
 	)
 
 	t.Run("Increment", func(t *testing.T) {
-		for current, expected := range testData {
-			ret, err := Increment(current, expected.target)
+		for current, data := range testData {
+			ret, err := Increment(current, data.target)
 			if err != nil {
-				if expected.err == nil {
-					t.Fatalf("%s should be error but '%s': %s", current, expected.version, err)
+				if data.err == nil {
+					t.Fatalf("%s should be error but '%s': %s", current, data.expected, err)
 				}
 			} else {
-				if expected.err != nil {
+				if data.err != nil {
 					t.Fatalf("increment %s must be err but %s", current, ret)
 				}
-				if ret != expected.version {
-					t.Fatalf("%s must be expected to %s but '%s'", current, expected.version, ret)
+				if ret != data.expected {
+					t.Fatalf("%s must be data to %s but '%s'", current, data.expected, ret)
 				}
 			}
 		}

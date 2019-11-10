@@ -7,26 +7,28 @@ import (
 	"strings"
 )
 
-type versionNumber int
+type VersionNumber int
 
 const (
-	Major versionNumber = iota
+	Unknown VersionNumber = iota
+	Major
 	Minor
 	Patch
 	Build
 
+	// TODO not enough expression for pre release expected & build metadata
 	regExpPattern = `([0-9]+)\.([0-9]+)\.([0-9]+)(\.[0-9]+)?(\-[a-zA-Z0-9]+)?(.*)`
 )
 
-func Increment(version string, target versionNumber) (string, error) {
+func Increment(version string, target VersionNumber) (string, error) {
 	rep := regexp.MustCompile(regExpPattern)
 	result := rep.FindAllStringSubmatch(version, -1)
 	if len(result) != 1 {
-		return "", fmt.Errorf("not a valid semantic version='%s'", version)
+		return "", fmt.Errorf("not a valid semantic expected='%s'", version)
 	}
-	numbers := result[0][1:]
-	if numbers[5] != "" {
-		return "", fmt.Errorf("not a valid semantic version='%s'", version)
+	numbers := result[0]
+	if numbers[6] != "" {
+		return "", fmt.Errorf("not a valid semantic expected='%s'", version)
 	}
 
 	isTargetBuild := target == Build
@@ -37,9 +39,12 @@ func Increment(version string, target versionNumber) (string, error) {
 	lastVersion := Build
 	if numbers[Build] == "" {
 		if isTargetBuild {
-			return "", fmt.Errorf("no build version: %s", version)
+			return "", fmt.Errorf("no build expected: %s", version)
 		}
 		lastVersion = Patch
+	}
+	if target == Unknown {
+		target = lastVersion
 	}
 
 	num, _ := strconv.Atoi(numbers[target][startIndex:])
@@ -47,5 +52,5 @@ func Increment(version string, target versionNumber) (string, error) {
 	for i := target + 1; i < lastVersion+1; i++ {
 		numbers[i] = "0"
 	}
-	return strings.Join(numbers[0:lastVersion+1], "."), nil
+	return strings.Join(numbers[1:lastVersion+1], "."), nil
 }
