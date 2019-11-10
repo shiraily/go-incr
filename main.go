@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	incremented, err := increment.Increment(version)
+	incremented, err := increment.Increment(version, increment.Patch)
 	if err != nil {
 		log.Fatal(err)
 	}
