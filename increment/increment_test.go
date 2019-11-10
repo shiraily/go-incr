@@ -6,30 +6,33 @@ import (
 )
 
 type version struct {
-	expected string
-	target   VersionNumber
-	err      error
+	expected       string
+	target         VersionNumber
+	preserveSuffix bool
+	err            error
 }
 
 func TestIncrement(t *testing.T) {
 	var (
 		err      = errors.New("")
 		testData = map[string]version{
-			"1.0.0":    {"1.0.1", Patch, nil},
-			"1.0.0.1":  {"1.0.0.2", Build, nil},
-			"1.0.1.2":  {"1.0.2.0", Patch, nil},
-			"0.1.2.3":  {"0.2.0.0", Minor, nil},
-			"1.2.3.4":  {"2.0.0.0", Major, nil},
-			"1.0.0.0a": {"", Patch, err},
-			"1.0.a0":   {"", Patch, err},
-			"1.0a.0":   {"", Patch, err},
-			"1.0.0a":   {"", Patch, err},
+			"1.0.0":             {"1.0.1", Patch, false, nil},
+			"1.0.0.1":           {"1.0.0.2", Build, false, nil},
+			"1.0.1.2":           {"1.0.2.0", Patch, false, nil},
+			"0.1.2.3":           {"0.2.0.0", Minor, false, nil},
+			"1.2.3.4":           {"2.0.0.0", Major, false, nil},
+			"1.2.3.4-aaa":       {"2.0.0.0", Major, false, nil},
+			"1.2.3.4-bbb+a.b.c": {"2.0.0.0-bbb+a.b.c", Major, true, nil},
+			"1.0.0.0a":          {"", Patch, false, err},
+			"1.0.a0":            {"", Patch, false, err},
+			"1.0a.0":            {"", Patch, false, err},
+			"1.0.0a":            {"", Patch, false, err},
 		}
 	)
 
 	t.Run("Increment", func(t *testing.T) {
 		for current, data := range testData {
-			ret, err := Increment(current, data.target)
+			ret, err := Increment(current, data.target, data.preserveSuffix)
 			if err != nil {
 				if data.err == nil {
 					t.Fatalf("%s should be error but '%s': %s", current, data.expected, err)

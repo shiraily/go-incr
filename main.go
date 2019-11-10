@@ -28,13 +28,17 @@ func main() {
 			fmt.Sprintf("increment %s version", argVersion.name),
 		)
 	}
+	preserveSuffix := flag.Bool("suffix", false, "preserve suffix (pre release version / build metadata)")
 	flag.Parse()
 
 	args := flag.Args()
+	var filePath string
 	if len(args) == 0 {
-		return
+		filePath = "VERSION"
+	} else {
+		filePath = args[0]
 	}
-	filePath := args[0]
+
 	buf, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -54,10 +58,11 @@ func main() {
 			break
 		}
 	}
-	incremented, err := increment.Increment(version, target)
+	incremented, err := increment.Increment(version, target, *preserveSuffix)
 	if err != nil {
 		log.Fatal(err)
 	}
+	// TODO preserve line feed
 	if err := ioutil.WriteFile(filePath, []byte(incremented), fi.Mode()); err != nil {
 		log.Fatal(err)
 	}

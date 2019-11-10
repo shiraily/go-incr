@@ -20,14 +20,14 @@ const (
 	regExpPattern = `([0-9]+)\.([0-9]+)\.([0-9]+)(\.[0-9]+)?(\-[a-zA-Z0-9]+)?(.*)`
 )
 
-func Increment(version string, target VersionNumber) (string, error) {
+func Increment(version string, target VersionNumber, preserveSuffix bool) (string, error) {
 	rep := regexp.MustCompile(regExpPattern)
 	result := rep.FindAllStringSubmatch(version, -1)
 	if len(result) != 1 {
 		return "", fmt.Errorf("not a valid semantic expected='%s'", version)
 	}
 	numbers := result[0]
-	if numbers[6] != "" {
+	if numbers[5] == "" && numbers[6] != "" {
 		return "", fmt.Errorf("not a valid semantic expected='%s'", version)
 	}
 
@@ -52,5 +52,9 @@ func Increment(version string, target VersionNumber) (string, error) {
 	for i := target + 1; i < lastVersion+1; i++ {
 		numbers[i] = "0"
 	}
-	return strings.Join(numbers[1:lastVersion+1], "."), nil
+	versionString := strings.Join(numbers[1:lastVersion+1], ".")
+	if preserveSuffix {
+		versionString += strings.Join(numbers[lastVersion+1:], "")
+	}
+	return versionString, nil
 }
