@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+
+	"github.com/shiraily/go-incr/increment"
 )
 
 func main() {
@@ -15,10 +18,22 @@ func main() {
 	}
 	fmt.Println(args[0])
 
-	buf, err := ioutil.ReadFile(args[0])
+	filePath := args[0]
+	buf, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(buf))
+	version := string(buf)
+	fmt.Println("before:", version)
+
+	fi, err := os.Stat(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	incremented := increment.Increment(version)
+	if err := ioutil.WriteFile(filePath, []byte(incremented), fi.Mode()); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("after :", incremented)
 	return
 }

@@ -1,3 +1,3 @@
-module shiraily/go-incr
+module github.com/shiraily/go-incr
 
 go 1.13
