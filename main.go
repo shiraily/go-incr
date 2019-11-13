@@ -11,10 +11,11 @@ import (
 )
 
 func main() {
-	argVersions := []struct {
+	type argVersion struct {
 		name  string
 		value bool
-	}{
+	}
+	argVersions := []argVersion{
 		{name: "major"},
 		{name: "minor"},
 		{name: "patch"},
@@ -30,8 +31,9 @@ func main() {
 	}
 	preserveSuffix := flag.Bool("suffix", false, "preserve suffix (pre release version / build metadata)")
 	flag.Parse()
-
 	args := flag.Args()
+	argVersions = append([]argVersion{{}}, argVersions...)
+
 	var filePath string
 	if len(args) == 0 {
 		filePath = "VERSION"
