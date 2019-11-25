@@ -4,6 +4,8 @@ go-incr increments semantic version in file.
 
 ## Installation
 
+Supports Mac/Linux by now.
+
 ```bash
 go build -o $(go env GOPATH)/bin/incr
 ```

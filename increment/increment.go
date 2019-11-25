@@ -17,6 +17,7 @@ const (
 	Build
 
 	// TODO not enough expression for pre release & build metadata
+	// TODO support Windows
 	regExpPattern = `([0-9]+)\.([0-9]+)\.([0-9]+)(\.[0-9]+)?(\-[a-zA-Z0-9]+)?(.*)(\n)?`
 )
 

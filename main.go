@@ -32,6 +32,7 @@ func main() {
 		)
 	}
 	preserveSuffix := flag.Bool("suffix", false, "preserve suffix (pre release version / build metadata)")
+	// TODO detailed usage for git option
 	git := flag.Bool("git", false, "git commit -m 'Update version'")
 	flag.Parse()
 	args := flag.Args()
@@ -66,7 +67,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// TODO preserve line feed
 	if err := ioutil.WriteFile(filePath, []byte(incremented), fi.Mode()); err != nil {
 		log.Fatal(err)
 	}
