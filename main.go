@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/shiraily/go-incr/increment"
 )
@@ -46,7 +47,7 @@ func main() {
 		log.Fatal(err)
 	}
 	version := string(buf)
-	fmt.Println("before:", version)
+	fmt.Println("before:", strings.TrimSpace(version))
 
 	fi, err := os.Stat(filePath)
 	if err != nil {
@@ -68,6 +69,6 @@ func main() {
 	if err := ioutil.WriteFile(filePath, []byte(incremented), fi.Mode()); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("after :", incremented)
+	fmt.Println("after :", strings.TrimSpace(incremented))
 	return
 }

@@ -16,8 +16,8 @@ const (
 	Patch
 	Build
 
-	// TODO not enough expression for pre release expected & build metadata
-	regExpPattern = `([0-9]+)\.([0-9]+)\.([0-9]+)(\.[0-9]+)?(\-[a-zA-Z0-9]+)?(.*)`
+	// TODO not enough expression for pre release & build metadata
+	regExpPattern = `([0-9]+)\.([0-9]+)\.([0-9]+)(\.[0-9]+)?(\-[a-zA-Z0-9]+)?(.*)(\n)?`
 )
 
 func Increment(version string, target VersionNumber, preserveSuffix bool) (string, error) {
@@ -31,14 +31,10 @@ func Increment(version string, target VersionNumber, preserveSuffix bool) (strin
 		return "", fmt.Errorf("not a valid semantic expected='%s'", version)
 	}
 
-	isTargetBuild := target == Build
-	var startIndex int
-	if isTargetBuild {
-		startIndex = 1
-	}
+	// TODO simplify
 	lastVersion := Build
 	if numbers[Build] == "" {
-		if isTargetBuild {
+		if target == Build {
 			return "", fmt.Errorf("no build expected: %s", version)
 		}
 		lastVersion = Patch
@@ -47,6 +43,10 @@ func Increment(version string, target VersionNumber, preserveSuffix bool) (strin
 		target = lastVersion
 	}
 
+	var startIndex int
+	if target == Build {
+		startIndex = 1
+	}
 	num, _ := strconv.Atoi(numbers[target][startIndex:])
 	numbers[target] = strconv.Itoa(num + 1)
 	for i := target + 1; i < lastVersion+1; i++ {
@@ -54,7 +54,7 @@ func Increment(version string, target VersionNumber, preserveSuffix bool) (strin
 	}
 	versionString := strings.Join(numbers[1:lastVersion+1], ".")
 	if preserveSuffix {
-		versionString += strings.Join(numbers[lastVersion+1:], "")
+		versionString += strings.Join(numbers[lastVersion+1:7], "")
 	}
-	return versionString, nil
+	return versionString + numbers[7], nil
 }
