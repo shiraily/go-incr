@@ -1,6 +1,6 @@
 # go-incr
 
-go-incr increments semantic version of file.
+go-incr increments semantic version in file.
 
 ## Installation
 
@@ -9,7 +9,7 @@ go build -o $(go env GOPATH)/bin/incr
 ```
 
 You can export path like this:
-```bash:~/.bashrc
+```bash
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
@@ -23,7 +23,7 @@ before: 1.2.3
 after : 1.2.4
 $ cat VERSION
 1.2.4
-$ incr VERSION
+$ incr
 before: 1.2.4
 after : 1.2.5
 $ cat VERSION
