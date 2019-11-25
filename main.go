@@ -104,7 +104,7 @@ func isOnlyVersionFileStaged(targetFile string) error {
 	output := string(outputByte)
 	lines := strings.Split(output, "\n")
 	if len(lines) > 2 || (lines[0] != "" && lines[0] != targetFile) {
-		return fmt.Errorf("only version file can be staged:\n%s", output)
+		return fmt.Errorf("only target version file can be staged:\n%s", output)
 	}
 	return nil
 }
